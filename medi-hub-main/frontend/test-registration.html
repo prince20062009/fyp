@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Registration Test</h1>
+    <form id="registrationForm">
+        <div>
+            <label>First Name: <input type="text" id="firstName" value="Test" required></label>
+        </div>
+        <div>
+            <label>Last Name: <input type="text" id="lastName" value="User" required></label>
+        </div>
+        <div>
+            <label>Age: <input type="number" id="age" value="30" required></label>
+        </div>
+        <div>
+            <label>Email: <input type="email" id="email" value="testuser@example.com" required></label>
+        </div>
+        <div>
+            <label>Phone: <input type="tel" id="phone" value="1234567890" required></label>
+        </div>
+        <div>
+            <label>Password: <input type="password" id="password" value="password123" required></label>
+        </div>
+        <div>
+            <label>Confirm Password: <input type="password" id="confirmPassword" value="password123" required></label>
+        </div>
+        <div>
+            <label>Role: 
+                <select id="role">
+                    <option value="Patient" selected>Patient</option>
+                    <option value="Doctor">Doctor</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </label>
+        </div>
+        <button type="submit">Register</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                age: parseInt(document.getElementById('age').value),
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value
+            };
+            
+            document.getElementById('result').innerHTML = '<p>Sending registration request...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/v1/user/patient/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `<p>Response: ${JSON.stringify(data)}</p>`;
+                
+                if (data.success) {
+                    document.getElementById('result').innerHTML += '<p style="color: green;">Registration successful!</p>';
+                } else {
+                    document.getElementById('result').innerHTML += '<p style="color: red;">Registration failed!</p>';
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

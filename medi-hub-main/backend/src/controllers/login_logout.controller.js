@@ -12,6 +12,7 @@ export const simpleLogin = asyncHandler(async (req, res, next) => {
     
     console.log("Login attempt:", { email, role });
     console.log("Request body:", req.body);
+    console.log("Request headers:", req.headers);
 
     if (!email || !password) {
         console.log("Missing email or password");
@@ -45,6 +46,7 @@ export const simpleLogin = asyncHandler(async (req, res, next) => {
         throw new ApiError(400, "Invalid email or password");
     }
 
+    console.log("Login successful for user:", email);
     generateToken(user, "User Logged In Successfully", 200, res);
 });
 

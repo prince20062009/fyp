@@ -8,6 +8,7 @@ import {
   HomePage,
   LoginPage,
   SignupPage,
+  ForgotPasswordPage,
   ErrorPage,
   FaqsPage,
   AboutUsPage,
@@ -21,6 +22,7 @@ import PatientDashboard from "./pages/dashboards/PatientDashboard.jsx";
 import DoctorDashboard from "./pages/dashboards/DoctorDashboard.jsx";
 import AdminDashboard from "./pages/dashboards/AdminDashboard.jsx";
 import RegistrationPage from "./pages/login_signup_page/RegistrationPage.jsx";
+import LoginDebugPage from "./pages/login_signup_page/LoginDebugPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
@@ -34,6 +36,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/register" element={<RegistrationPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/login-debug" element={<LoginDebugPage />} />
           
           {/* Role-based Dashboard Routes */}
           <Route path="/patient-dashboard" element={

@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 // import { DB_NAME } from "../../constants.js";
 
-import dotenv from 'dotenv';
-dotenv.config();
+console.log('MONGODB_URI:', process.env.MONGODB_URI); // Debug line
 const connectDB = async () => {
     try {
-        const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/medi_hub_db`)
+        console.log('Attempting to connect to:', process.env.MONGODB_URI); // Debug line
+        const connectionInstance = await mongoose.connect(process.env.MONGODB_URI)
         console.log(`\n MongoDB connected !! DB HOST: ${connectionInstance.connection.host}`);
     } catch (error) {
         console.log("MONGODB connection FAILED ", error);

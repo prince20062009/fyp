@@ -2,16 +2,14 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 function Navbar() {
-  const handleLogIn = async () => {
-    console.log("working");
-  };
-
   // state to manage drop down menu
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Nav items
-  const navItems = [];
+  const navItems = [
+    { to: "/", label: "Home" },
+    { to: "/aboutus", label: "About" }
+  ];
 
   const navLinkClass = ({ isActive }) =>
     `text-sm font-semibold relative cursor-pointer before:block before:absolute before:bottom-[-4px] before:left-0 before:w-0 before:h-0.5 before:rounded-full before:bg-text before:transition-all before:delay-150 before:ease-in-out hover:before:w-full hover:text-dark_theme ${
@@ -23,26 +21,7 @@ function Navbar() {
     setMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  // Dropdown menus
-  const dropdownMenus = [
-    { to: "/profile", label: "My Profile" },
-    { to: "/logout", label: "Logout" },
-  ];
-
-  // mouse events on drop down menu
-  const handleMouseEnter = () => {
-    setDropdownOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    setDropdownOpen(false);
-  };
-
   const socialLinks = [
-    {
-      to: "https://github.com/itsmohit097/medi-hub",
-      label: "github",
-    },
     {
       to: "https://www.linkedin.com/in/itsmohit097/",
       label: "linkedin",
@@ -70,45 +49,13 @@ function Navbar() {
                 </NavLink>
               </li>
             ))}
-            <li
-              className="relative hover:scale-105"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              <NavLink
-                to="/login"
-                className="text-md font-semibold relative cursor-pointer rounded flex items-center border border-dark_theme text-dark_theme px-4 py-2 gap-2 max-w-[150px]"
-                onClick={handleLogIn}
-              >
-                <span className="truncate">Login</span>
-              </NavLink>
-
-              {/* Dropdown Menus */}
-              {isDropdownOpen && (
-                <div
-                  className="absolute left-0 mt-0 w-56 bg-light_theme border border-dark_theme rounded shadow-lg z-50"
-                  onMouseEnter={handleMouseEnter}
-                >
-                  {/* Drop down menu items */}
-                  {dropdownMenus.map((menu, index) => (
-                    <NavLink
-                      key={index}
-                      to={menu.to}
-                      className="flex items-center px-4 py-3 gap-2 text-sm font-medium text-dark_theme hover:bg-main_theme/10"
-                    >
-                      {menu.label}
-                    </NavLink>
-                  ))}
-                </div>
-              )}
-            </li>
           </ul>
         </div>
 
         {/* Mobile Menu Toggle button */}
         <div className="lg:hidden inline-flex">
           <button onClick={toggleMobileMenu} className="text-dark_theme px-2 py-1 border border-dark_theme rounded">
-            {isMobileMenuOpen ? "✕" : "☰"}
+            {isMobileMenuOpen ? "Close" : "Menu"}
           </button>
         </div>
 
@@ -142,31 +89,6 @@ function Navbar() {
                   </NavLink>
                 </li>
               ))}
-              <li className="relative  mb-4">
-                <NavLink
-                  to="/login"
-                  className="text-md font-semibold relative cursor-pointer rounded flex items-center border border-dark_theme text-dark_theme px-4 py-2 gap-2"
-                  onClick={toggleMobileMenu}
-                >
-                  <span className="truncate">Login</span>
-                </NavLink>
-
-                {/* Dropdown Menus */}
-                {isDropdownOpen && (
-                  <div className="w-full bg-light_theme border border-dark_theme rounded shadow-lg z-50 mt-2">
-                    {dropdownMenus.map((menu, index) => (
-                      <NavLink
-                        key={index}
-                        to={menu.to}
-                        className="flex items-center px-4 py-3 gap-2 text-sm font-medium text-dark_theme hover:bg-main_theme/10"
-                        onClick={toggleMobileMenu}
-                      >
-                        {menu.label}
-                      </NavLink>
-                    ))}
-                  </div>
-                )}
-              </li>
 
               {/* Social Links (mobile) */}
               <div className="flex gap-3 items-center justify-center">

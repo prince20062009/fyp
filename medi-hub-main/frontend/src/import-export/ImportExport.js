@@ -6,11 +6,13 @@ import Hero from "../components/home/Hero.jsx";
 import WhyUs from "../components/home/WhyUs.jsx";
 // import WhatIsMedihub from "../components/home/WhatIsMedihub.jsx";
 import Testimonials from "../components/home/Testimonials.jsx";
+import DoctorsSection from "../components/home/DoctorsSection.jsx";
 // import OurContributors from "../components/Home/OurContributors.jsx";
 
 //? Login & Signup
 import LoginPage from "../pages/login_signup_page/LoginPage.jsx";
 import SignupPage from "../pages/login_signup_page/SignupPage.jsx";
+import ForgotPasswordPage from "../pages/login_signup_page/ForgotPasswordPage.jsx";
 
 //? Error
 import ErrorPage from "../pages/error_page/ErrorPage.jsx";
@@ -41,13 +43,14 @@ import Pagination from "../components/Pagination.jsx";
 //! Axios instance
 import axios from "../axios/axios.jsx";
 
+//! API utility
+import api from "../utils/api.js";
+
 //! Custom hooks
 import useLoading from "../../hooks/useLoading.js";
 
 export {
-  axios, Navbar, Footer, SkeletonLoading, ErrorPage, HomePage, Hero, WhyUs, Testimonials, LoginPage, SignupPage, AboutUsPage, TermsAndConditionsPage, PrivacyPolicyPage, FaqsPage, FaqsCard,
+  axios, api, Navbar, Footer, SkeletonLoading, ErrorPage, HomePage, Hero, WhyUs, Testimonials, DoctorsSection, LoginPage, SignupPage, ForgotPasswordPage, AboutUsPage, TermsAndConditionsPage, PrivacyPolicyPage, FaqsPage, FaqsCard,
   GoToTop, Pagination,
   Bot, useLoading
 };
-
-

@@ -6,15 +6,11 @@ const testRegisterUser = async () => {
         const response = await axios.post('http://localhost:8000/api/v1/user/patient/register', {
             firstName: 'Test',
             lastName: 'User',
-            email: 'test@example.com',
+            age: 30,
+            email: 'test2@example.com',
             phone: '1234567890',
-            address: {
-                city: 'Test City',
-                country: 'Test Country'
-            },
-            dob: '1990-01-01',
-            gender: 'Male',
-            password: 'testpassword123'
+            password: 'testpassword123',
+            role: 'Patient'
         }, {
             withCredentials: true
         });
@@ -29,7 +25,7 @@ const testLogin = async () => {
     try {
         console.log('Testing user login...');
         const response = await axios.post('http://localhost:8000/api/v1/user/simple-login', {
-            email: 'test@example.com',
+            email: 'test2@example.com',
             password: 'testpassword123',
             role: 'Patient'
         }, {

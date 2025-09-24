@@ -1,10 +1,10 @@
-import React from "react";
-import { Hero, WhyUs, Testimonials } from "../../import-export/ImportExport";
+import { Hero, Testimonials, DoctorsSection } from "../../import-export/ImportExport";
 
 function Home() {
   return (
     <>
       <Hero />
+      <DoctorsSection />
       {/* <WhyUs /> */}
       {/* <TopSpecialities /> */}
       <Testimonials />

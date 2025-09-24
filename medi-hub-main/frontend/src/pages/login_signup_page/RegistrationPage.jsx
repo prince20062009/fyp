@@ -22,6 +22,8 @@ function RegistrationPage() {
     licenseNumber: "",
     department: "",
     experience: "",
+    dob: "",
+    gender: "",
     // Address fields
     city: "",
     country: "",
@@ -55,51 +57,70 @@ function RegistrationPage() {
 
     // Role-specific validation
     if (formData.role === "Doctor") {
-      if (!formData.specialty || !formData.licenseNumber || !formData.department || !formData.experience) {
+      if (!formData.specialty || !formData.licenseNumber || !formData.department || !formData.experience || !formData.dob || !formData.gender) {
         toast.error("Please fill all doctor-specific fields");
         return;
       }
     }
 
     try {
-      const registrationData = {
+      // Prepare registration data based on role
+      let registrationData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        age: parseInt(formData.age),
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
-        role: formData.role,
-        address: {
-          city: formData.city,
-          country: formData.country
-        }
+        role: formData.role
       };
 
-      // Add doctor-specific fields
       if (formData.role === "Doctor") {
-        registrationData.specialty = formData.specialty;
-        registrationData.licenseNumber = formData.licenseNumber;
-        registrationData.department = formData.department;
-        registrationData.experience = parseInt(formData.experience);
-      }
-
-      // Add emergency contact if provided
-      if (formData.emergencyContactName && formData.emergencyContactPhone) {
-        registrationData.emergencyContact = {
-          name: formData.emergencyContactName,
-          phone: formData.emergencyContactPhone,
-          relationship: formData.emergencyContactRelationship
+        // Doctor-specific data
+        registrationData = {
+          ...registrationData,
+          age: parseInt(formData.age), // Doctors also need age
+          specialty: formData.specialty,
+          licenseNumber: formData.licenseNumber,
+          department: formData.department,
+          experience: parseInt(formData.experience),
+          dob: formData.dob,
+          gender: formData.gender
         };
+      } else {
+        // Patient/Admin data
+        registrationData = {
+          ...registrationData,
+          age: parseInt(formData.age),
+          address: {
+            city: formData.city || "",
+            country: formData.country || ""
+          }
+        };
+        
+        // Add emergency contact if provided (only for patients)
+        if (formData.emergencyContactName && formData.emergencyContactPhone && formData.role === "Patient") {
+          registrationData.emergencyContact = {
+            name: formData.emergencyContactName,
+            phone: formData.emergencyContactPhone,
+            relationship: formData.emergencyContactRelationship
+          };
+        }
       }
 
+      console.log("Sending registration data:", registrationData);
+      
       const response = await api.post("/user/patient/register", registrationData);
+      
+      console.log("Registration response:", response.data);
       
       if (response.data.success) {
         toast.success(response.data.message || "Registration successful");
-        navigate("/login");
+        // Add a small delay to ensure the toast is visible
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
       } else {
-        toast.error("Registration failed");
+        toast.error(response.data.message || "Registration failed");
       }
     } catch (error) {
       console.error("Error during registration:", error);
@@ -293,6 +314,39 @@ function RegistrationPage() {
                   onChange={handleInputChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
+              </div>
+              
+              <div>
+                <label htmlFor="dob" className="block text-sm font-medium text-gray-700">
+                  Date of Birth *
+                </label>
+                <input
+                  type="date"
+                  name="dob"
+                  id="dob"
+                  required
+                  value={formData.dob}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
+                  Gender *
+                </label>
+                <select
+                  name="gender"
+                  id="gender"
+                  required
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
               </div>
             </>
           )}

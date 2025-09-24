@@ -29,7 +29,6 @@ function Hero() {
               to="/login"
               className="group flex items-center justify-center px-6 py-3 bg-dark_theme hover:bg-main_theme text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
             >
-              <span className="mr-3 text-2xl">👋</span>
               <span className="font-semibold text-lg">Welcome - Get Started</span>
             </NavLink>
           </div>

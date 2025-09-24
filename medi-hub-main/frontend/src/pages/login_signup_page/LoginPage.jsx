@@ -4,8 +4,6 @@ import api from "../../axios/axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Helmet } from "react-helmet";
-import Lottie from "react-lottie";
-import animationData from "../../lottie-animation/loginAnimation.json"; // Replace with your Lottie animation file
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -13,7 +11,10 @@ function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    role: "Patient"  // Added role with default value
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,14 +26,38 @@ function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const { email, password } = formData;
+    const { email, password, role } = formData;
+    
+    // Basic validation
+    if (!email || !password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
+    // Password validation
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+    
+    setLoading(true);
+    
     try {
+      console.log("Sending login request with:", { email, password, role });
+      
       const response = await api.post(
         "/user/simple-login",
         {
           email,
           password,
-          role: "Patient" // Default role for frontend users
+          role  // Now sending the selected role instead of hardcoded "Patient"
         }
       );
       
@@ -63,24 +88,29 @@ function LoginPage() {
           navigate("/");
         }
       } else {
-        console.log("Login failed - success is false");
-        toast.error("Login failed");
+        toast.error(response.data.message || "Login failed");
       }
     } catch (error) {
       console.error("Error logging in:", error);
-      console.log("Error response:", error.response?.data);
-      const errorMessage = error.response?.data?.message || "Login failed";
+      
+      // Enhanced error handling
+      let errorMessage = "Login failed";
+      
+      if (error.response) {
+        // Server responded with error status
+        errorMessage = error.response.data?.message || `Login failed with status ${error.response.status}`;
+      } else if (error.request) {
+        // Request was made but no response received
+        errorMessage = "Network error - please check your connection";
+      } else {
+        // Something else happened
+        errorMessage = error.message || "An unexpected error occurred";
+      }
+      
       toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
   };
 
   return (
@@ -89,65 +119,94 @@ function LoginPage() {
       style={{ backgroundColor: "rgb(179, 218, 217)" }}
     >
       <Helmet>
-        <script src="https://www.google.com/recaptcha/api.js"></script>
+        <title>Login - Medi-Hub Healthcare</title>
       </Helmet>
+      {/* Left panel with healthcare information */}
       <div className="w-1/2 flex justify-center items-center">
-        <Lottie options={defaultOptions} height={400} width={400} />
+        <div className="text-center p-8">
+          <h2 className="text-3xl font-bold mb-4">Medi-Hub Healthcare</h2>
+          <p className="text-lg">Your trusted healthcare platform</p>
+        </div>
       </div>
-      <div className="w-1/2 flex flex-col justify-center items-center bg-white  shadow-lg p-8">
+      
+      {/* Right panel with login form */}
+      <div className="w-1/2 flex flex-col justify-center items-center bg-white shadow-lg p-8">
         <div className="w-full max-w-md">
           <h1 className="text-3xl font-bold text-center mb-6">Welcome back</h1>
-          <h2 className="text-2xl text-center mb-6">Login your account</h2>
+          <h2 className="text-2xl text-center mb-6">Login to your account</h2>
+          
           <form
             className="flex flex-col"
             id="login-form"
             onSubmit={handleLogin}
           >
-            <label htmlFor="email" className="mb-2">
+            {/* Email field */}
+            <label htmlFor="email" className="mb-2 font-medium">
               Email:
             </label>
             <input
               type="email"
               name="email"
-              placeholder="Email"
+              placeholder="Enter your email"
               value={formData.email}
               onChange={handleInputChange}
               id="email"
               required
-              className="border border-gray-300 rounded-md mb-4 p-2"
+              className="border border-gray-300 rounded-md mb-4 p-3 focus:outline-none focus:ring-2 focus:ring-main_theme"
             />
-            <label htmlFor="password" className="mb-2">
+            
+            {/* Password field */}
+            <label htmlFor="password" className="mb-2 font-medium">
               Password:
             </label>
             <input
               type="password"
               name="password"
-              placeholder="Password"
+              placeholder="Enter your password"
               value={formData.password}
               onChange={handleInputChange}
               id="password"
               required
-              className="border border-gray-300 rounded-md mb-4 p-2"
+              className="border border-gray-300 rounded-md mb-4 p-3 focus:outline-none focus:ring-2 focus:ring-main_theme"
             />
+            
+            {/* Role selection */}
+            <label htmlFor="role" className="mb-2 font-medium">
+              Login as:
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleInputChange}
+              id="role"
+              className="border border-gray-300 rounded-md mb-6 p-3 focus:outline-none focus:ring-2 focus:ring-main_theme"
+            >
+              <option value="Patient">Patient</option>
+              <option value="Doctor">Doctor</option>
+              <option value="Admin">Admin</option>
+            </select>
+            
+            {/* Login button */}
             <button
               type="submit"
-              className="bg-main_theme text-white font-bold py-2 px-4 rounded-md mb-4 hover:bg-opacity-90 transition-colors"
+              disabled={loading}
+              className="bg-main_theme text-white font-bold py-3 px-4 rounded-md mb-4 hover:bg-opacity-90 transition-colors disabled:opacity-50"
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
-          <div className="flex justify-between text-sm md:text-lg">
+          
+          {/* Links */}
+          <div className="flex justify-between text-sm md:text-base">
             <Link
               to="/register"
-              className="text-purple-600 hover:underline"
-              style={{ color: "rgb(27, 120, 120)" }}
+              className="text-main_theme hover:underline font-medium"
             >
               Create Account
             </Link>
             <Link
-              to="/"
-              className="text-purple-600 hover:underline"
-              style={{ color: "rgb(27, 120, 120)" }}
+              to="/forgot-password"
+              className="text-main_theme hover:underline font-medium"
             >
               Forgot Password?
             </Link>

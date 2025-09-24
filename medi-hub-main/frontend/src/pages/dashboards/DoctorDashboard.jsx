@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import ProfileEditForm from "../../components/ProfileEditForm";
 
 function DoctorDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [activeModule, setActiveModule] = useState('overview');
+  // Add state for profile editing
+  const [editingProfile, setEditingProfile] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -27,10 +30,25 @@ function DoctorDashboard() {
     navigate('/login');
   };
 
+  // Add profile save function
+  const handleSaveProfile = async (profileData) => {
+    try {
+      // Update user in localStorage
+      const updatedUser = { ...user, ...profileData };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      setEditingProfile(false);
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      toast.error(error.message || "Failed to update profile");
+    }
+  };
+
   const modules = [
     { id: 'overview', name: 'Overview', icon: '📊' },
     { id: 'appointments', name: 'Appointments', icon: '📅' },
     { id: 'patients', name: 'My Patients', icon: '👥' },
+    { id: 'billing', name: 'Billing', icon: '💰' },
     { id: 'schedule', name: 'Schedule', icon: '🗓️' },
     { id: 'prescriptions', name: 'Prescriptions', icon: '💊' },
     { id: 'profile', name: 'Profile', icon: '👤' }
@@ -263,6 +281,190 @@ function DoctorDashboard() {
             </div>
           </div>
         );
+      case 'billing':
+        return (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Billing Management</h2>
+              <button 
+                onClick={() => setActiveModule('create-bill')}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                Create New Bill
+              </button>
+            </div>
+            
+            <div className="bg-white border rounded-lg overflow-hidden">
+              <div className="px-6 py-4 border-b bg-gray-50">
+                <h3 className="font-semibold">Recent Bills</h3>
+              </div>
+              <div className="p-6">
+                <div className="text-center py-8 text-gray-500">
+                  <p>No bills created yet.</p>
+                  <button 
+                    onClick={() => setActiveModule('create-bill')}
+                    className="mt-4 text-blue-600 hover:underline"
+                  >
+                    Create your first bill
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'create-bill':
+        return (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Create New Bill</h2>
+              <button 
+                onClick={() => setActiveModule('billing')}
+                className="text-gray-600 hover:underline"
+              >
+                ← Back to Billing
+              </button>
+            </div>
+            
+            <div className="bg-white border rounded-lg p-6">
+              <form className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Patient ID</label>
+                    <input
+                      type="text"
+                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                      placeholder="Enter patient ID"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Appointment ID (Optional)</label>
+                    <input
+                      type="text"
+                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                      placeholder="Enter appointment ID"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Diagnosis</label>
+                  <textarea
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                    rows="3"
+                    placeholder="Enter diagnosis details"
+                  ></textarea>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Bill Items</h3>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                      <div className="md:col-span-4">
+                        <label className="block text-sm font-medium text-gray-700">Item Name</label>
+                        <input
+                          type="text"
+                          className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                          placeholder="Medicine/Service name"
+                        />
+                      </div>
+                      <div className="md:col-span-3">
+                        <label className="block text-sm font-medium text-gray-700">Description</label>
+                        <input
+                          type="text"
+                          className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                          placeholder="Description"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700">Quantity</label>
+                        <input
+                          type="number"
+                          className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                          placeholder="Qty"
+                          min="1"
+                          defaultValue="1"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700">Unit Price ($)</label>
+                        <input
+                          type="number"
+                          className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                      <div className="md:col-span-1">
+                        <button className="text-red-600 hover:text-red-800">
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <button className="mt-2 text-blue-600 hover:underline">
+                    + Add Another Item
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Tax ($)</label>
+                    <input
+                      type="number"
+                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Discount ($)</label>
+                    <input
+                      type="number"
+                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Due Date (Optional)</label>
+                    <input
+                      type="date"
+                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Notes (Optional)</label>
+                  <textarea
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                    rows="2"
+                    placeholder="Additional notes"
+                  ></textarea>
+                </div>
+                
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setActiveModule('billing')}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Create Bill
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        );
       case 'schedule':
         return (
           <div className="space-y-6">
@@ -334,47 +536,71 @@ function DoctorDashboard() {
         return (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">Doctor Profile</h2>
-            <div className="bg-white border rounded-lg p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">First Name</label>
-                  <p className="mt-1 text-sm text-gray-900">{user?.firstName}</p>
+            {editingProfile ? (
+              <div className="bg-white border rounded-lg p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Edit Profile</h3>
+                <ProfileEditForm 
+                  user={user} 
+                  onSave={handleSaveProfile} 
+                  onCancel={() => setEditingProfile(false)} 
+                />
+              </div>
+            ) : (
+              <div className="bg-white border rounded-lg p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">First Name</label>
+                    <p className="mt-1 text-sm text-gray-900">{user?.firstName}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                    <p className="mt-1 text-sm text-gray-900">{user?.lastName}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Specialty</label>
+                    <p className="mt-1 text-sm text-gray-900">{user?.specialty || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Department</label>
+                    <p className="mt-1 text-sm text-gray-900">{user?.department || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">License Number</label>
+                    <p className="mt-1 text-sm text-gray-900">{user?.licenseNumber || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Experience</label>
+                    <p className="mt-1 text-sm text-gray-900">{user?.experience ? `${user.experience} years` : 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <p className="mt-1 text-sm text-gray-900">{user?.email}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Phone</label>
+                    <p className="mt-1 text-sm text-gray-900">{user?.phone}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Role</label>
+                    <p className="mt-1 text-sm text-gray-900">{user?.role}</p>
+                  </div>
+                  {user?.specializations && user.specializations.length > 0 && (
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700">Specializations</label>
+                      <p className="mt-1 text-sm text-gray-900">{user.specializations.join(", ")}</p>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                  <p className="mt-1 text-sm text-gray-900">{user?.lastName}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Specialty</label>
-                  <p className="mt-1 text-sm text-gray-900">{user?.specialty || 'Not specified'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Department</label>
-                  <p className="mt-1 text-sm text-gray-900">{user?.department || 'Not specified'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">License Number</label>
-                  <p className="mt-1 text-sm text-gray-900">{user?.licenseNumber || 'Not specified'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Experience</label>
-                  <p className="mt-1 text-sm text-gray-900">{user?.experience ? `${user.experience} years` : 'Not specified'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Email</label>
-                  <p className="mt-1 text-sm text-gray-900">{user?.email}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Role</label>
-                  <p className="mt-1 text-sm text-gray-900">{user?.role}</p>
+                <div className="mt-6">
+                  <button 
+                    onClick={() => setEditingProfile(true)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  >
+                    Edit Profile
+                  </button>
                 </div>
               </div>
-              <div className="mt-6">
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                  Edit Profile
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         );
       default:
